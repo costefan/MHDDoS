@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from contextlib import suppress
 from itertools import cycle
+import multiprocessing
 from json import load
 from math import trunc, log2
 from os import urandom as randbytes
@@ -878,6 +879,7 @@ class ToolsConsole:
 
 
 def main(url: str):
+    print(url)
     with open(currentDir / "config.json") as f:
         con = load(f)
         with suppress(KeyboardInterrupt):
@@ -987,14 +989,12 @@ def main(url: str):
 
 
 if __name__ == '__main__':
+
     with open(op.join(op.dirname(__file__), 'sites.txt')) as f:
         sites = f.readlines()
 
     sites_strip = list(map(lambda site: site.strip('\n').strip(), sites ))
-
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        for url in sites_strip:
-            futures.append(executor.submit(main, url=url))
-        for future in concurrent.futures.as_completed(futures):
-            print(future.result())
+    print(sites_strip)
+    print(len(sites_strip))
+    with multiprocessing.Pool() as pool:
+        pool.map(main, sites_strip)
